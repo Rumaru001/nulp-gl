@@ -26,13 +26,10 @@ poetry use env [path]
 - Install packages
 ```
 poetry install
+poetry shell
 ```
 
 - Activate virtual environment
-```
-poetry shell
-```
-or
 ```
 source activate
 ```
@@ -46,4 +43,16 @@ activate
 
 ```
 poetry run python wsgi.py
+```
+
+- Make migrations
+```
+path/to/venv/Scripts/alembic.exe revision --autogenerate
+```
+or
+```
+alembic revision --autogenerate
+```
+```
+alembic upgrade head
 ```

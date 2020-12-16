@@ -5,21 +5,23 @@ from sqlalchemy.sql.functions import user
 from sqlalchemy.types import Integer, String, SmallInteger, DateTime
 import datetime
 
+from . import session
+
 # Base class to inherite from to create models
 Base = declarative_base()
 
+# # model of user statuses
+# class UserStatus(Base):
+#     __tablename__ = 'user_status'
+#
+#     id = Column(Integer, primary_key=True)
+#     name = Column(String(30))
+#
+#     def __repr__(self) -> str:
+#         return f"<UserStatus(name={self.name})>"
 
-# model of user statuses
-class UserStatus(Base):
-    __tablename__ = 'user_status'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String(30))
-
-    def __repr__(self) -> str:
-        return f"<UserStatus(name={self.name})>"
-
-# many to many table User - Note 
+# many to many table User - Note
 # main purpose - store modification access for each note and user (up to 5 users per note)
 note_to_user = Table('note_to_user', Base.metadata,
                      Column('note_id', ForeignKey(
@@ -35,6 +37,7 @@ modifications = Table('modifications', Base.metadata,
                           'user.id'), primary_key=True),
                       Column('date_of_modification', DateTime, default=datetime.datetime.utcnow))
 
+
 # main user model
 class User(Base):
     __tablename__ = 'user'
@@ -44,12 +47,12 @@ class User(Base):
     email = Column(String(60), unique=True)
     password = Column(String(128))
 
-    # relationship with UserStatus
-    # status_id is shown in db
-    status_id = Column(Integer, ForeignKey('user_status.id'))
-
-    # only shown/avaliable in python
-    status = relationship('UserStatus')
+    # # relationship with UserStatus
+    # # status_id is shown in db
+    # status_id = Column(Integer, ForeignKey('user_status.id'))
+    #
+    # # only shown/avaliable in python
+    # status = relationship('UserStatus')
 
     # own notes of this user
     notes = relationship("Note", back_populates="owner",
@@ -66,10 +69,16 @@ class User(Base):
                                        secondary=modifications,
                                        back_populates='modifications')
 
-    def __repr__(self) -> str:
-        return f"<User(username={self.username}, email={self.email}, status={self.user_status_id})>"
+    def __init__(self, username, email, password):
+        self.username = username
+        self.email = email
+        self.password = password
 
-# many to many table Tag - Note 
+    def __repr__(self) -> str:
+        return f"<User(username={self.username}, email={self.email})>"
+
+
+# many to many table Tag - Note
 tag_to_note = Table("tag_to_note", Base.metadata,
                     Column('note_id', ForeignKey('note.id'), primary_key=True),
                     Column('tag_id', ForeignKey('tag.id'), primary_key=True))
@@ -96,7 +105,7 @@ class Note(Base):
     users = relationship("User",
                          secondary=note_to_user,
                          back_populates='notes_avaliable_for_editing')
-                         
+
     # history of modification of that note
     modifications = relationship("User",
                                  secondary=modifications,
