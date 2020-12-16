@@ -60,7 +60,7 @@ class User(Base):
                          passive_deletes=True)
 
     # all notes that is avaliable for modifing by this user
-    notes_avaliable_for_editing = relationship("Note",
+    notes_available_for_editing = relationship("Note",
                                                secondary=note_to_user,
                                                back_populates='users')
 
@@ -104,7 +104,7 @@ class Note(Base):
     # moderators (up to 5)
     users = relationship("User",
                          secondary=note_to_user,
-                         back_populates='notes_avaliable_for_editing')
+                         back_populates='notes_available_for_editing')
 
     # history of modification of that note
     modifications = relationship("User",
@@ -115,6 +115,11 @@ class Note(Base):
     tags = relationship("Tag",
                         secondary=tag_to_note,
                         back_populates='notes')
+
+    def __init__(self, name, text, owner_id):
+        self.name = name
+        self.text = text
+        self.owner_id = owner_id
 
     def __repr__(self) -> str:
         return f"<Note(name={self.name}, number_of_moderators={self.number_of_moderators})>"
@@ -130,6 +135,9 @@ class Tag(Base):
     notes = relationship("Note",
                          secondary=tag_to_note,
                          back_populates='tags')
+
+    def __init__(self, name):
+        self.name = name
 
     def __repr__(self) -> str:
         return f"<Tag(name={self.name})>"

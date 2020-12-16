@@ -24,5 +24,5 @@ class Message:
         return es.dump(dict(msg=msg)), status_code
 
     @staticmethod
-    def instance_not_exist(msg: str = 'User does not exist'):
+    def instance_not_exist(msg: str = 'Instance does not exist'):
         return es.dump(dict(msg=msg)), 404

@@ -1,10 +1,10 @@
-from flask import request, jsonify, Response
-
+from flask import request
 from flask_restful import Resource
-from note_maker.services.Exceptions import Message
+
+from note_maker import session
 from note_maker.models import User
 from note_maker.schemas import user_schema
-from note_maker import session
+from note_maker.services.Exceptions import Message
 
 
 class UserService(Resource):
