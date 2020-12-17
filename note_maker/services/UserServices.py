@@ -2,8 +2,9 @@ from flask import request
 from flask_restful import Resource
 
 from note_maker import session
-from note_maker.models import User
-from note_maker.schemas import user_schema
+from note_maker.models import User, Note
+from note_maker.schemas import (
+    user_schema, user_list_schema, note_list_schema)
 from note_maker.services.Exceptions import Message
 
 
@@ -60,3 +61,23 @@ class UserService(Resource):
         session.delete(user)
         session.commit()
         return Message.successful('deleted')
+
+
+class UserListService(Resource):
+    def get(self):
+        user_list = session.query(User).all()
+
+        if not user_list:
+            return Message.instance_not_exist()
+
+        return user_list_schema.dump(user_list), 200
+
+
+class UserNotesService(Resource):
+    def get(self, user_id):
+        user = session.query(User).get(user_id)
+        if user is None:
+            return Message.instance_not_exist()
+
+        user_note_list = user.notes
+        return note_list_schema.dump(user_note_list)

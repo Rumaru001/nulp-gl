@@ -5,21 +5,12 @@ from sqlalchemy.sql.functions import user
 from sqlalchemy.types import Integer, String, SmallInteger, DateTime
 import datetime
 
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from . import session
 
 # Base class to inherite from to create models
 Base = declarative_base()
-
-# # model of user statuses
-# class UserStatus(Base):
-#     __tablename__ = 'user_status'
-#
-#     id = Column(Integer, primary_key=True)
-#     name = Column(String(30))
-#
-#     def __repr__(self) -> str:
-#         return f"<UserStatus(name={self.name})>"
-
 
 # many to many table User - Note
 # main purpose - store modification access for each note and user (up to 5 users per note)
@@ -44,15 +35,8 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(30), unique=True)
-    email = Column(String(60), unique=True)
+    email = Column(String(80), unique=True)
     password = Column(String(128))
-
-    # # relationship with UserStatus
-    # # status_id is shown in db
-    # status_id = Column(Integer, ForeignKey('user_status.id'))
-    #
-    # # only shown/avaliable in python
-    # status = relationship('UserStatus')
 
     # own notes of this user
     notes = relationship("Note", back_populates="owner",
@@ -72,7 +56,10 @@ class User(Base):
     def __init__(self, username, email, password):
         self.username = username
         self.email = email
-        self.password = password
+        self.password = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password, password)
 
     def __repr__(self) -> str:
         return f"<User(username={self.username}, email={self.email})>"
