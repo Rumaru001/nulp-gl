@@ -1,11 +1,26 @@
-from note_maker import app
+from . import app, api
+from .services.UserServices import UserService, UserListService, UserNotesService
+from .services.NoteServices import NoteService, NoteListService
+from .services.TagServices import TagService, TagListService
+from .services.NoteLogic import NoteTagService, NoteUserService
 
-@app.route('/')
-def index():
-    return 'Tap <a href=\'/api/v1/hello-world-23\'>here</a> ' \
-           'to go to /api/v1/hello-world-23'
+api.add_resource(UserService, '/api/user/create/',
+                 '/api/user/<int:user_id>/')
 
+api.add_resource(NoteService, '/api/note/',
+                 '/api/note/<int:note_id>/')
 
-@app.route('/api/v1/hello-world-23')
-def print_hello_world():
-    return 'Hello World 23'
+api.add_resource(TagService, '/api/tag/',
+                 '/api/tag/<int:tag_id>/')
+
+api.add_resource(TagListService, '/api/tag/all/')
+
+api.add_resource(NoteListService, '/api/note/all/')
+
+api.add_resource(UserListService, '/api/user/all/')
+
+api.add_resource(NoteTagService, '/api/add/note/<int:note_id>/tag/<int:tag_id>/')
+
+api.add_resource(NoteUserService, '/api/add/note/<int:note_id>/user/<int:user_id>/')
+
+api.add_resource(UserNotesService, '/api/user/<int:user_id>/notes/')

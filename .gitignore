@@ -2,3 +2,4 @@
 .vscode
 .envrc
 __pycache__
+alembic.versions
