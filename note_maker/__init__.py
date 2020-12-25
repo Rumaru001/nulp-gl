@@ -3,6 +3,7 @@ from flask_restful import Api
 from waitress import serve
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from flask_httpauth import HTTPBasicAuth
 
 import pathlib
 
@@ -15,6 +16,7 @@ session = Session()
 
 app = Flask(__name__)
 api = Api(app)
+auth = HTTPBasicAuth()
 
 from note_maker import urls, models
 

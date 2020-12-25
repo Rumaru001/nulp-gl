@@ -9,6 +9,7 @@ from . import session
 class UserSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = User
+        fields = ("id", "username", "email")
 
 
 class TagSchema(SQLAlchemyAutoSchema):
