@@ -26,3 +26,7 @@ class Message:
     @staticmethod
     def instance_not_exist(msg: str = 'Instance does not exist'):
         return es.dump(dict(msg=msg)), 404
+
+    @staticmethod
+    def auth_failed(msg: str = 'Acces forbidden'):
+        return es.dump(dict(msg=msg)), 403

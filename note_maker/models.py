@@ -34,7 +34,7 @@ class User(Base):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String(30), unique=True)
+    username = Column(String(30))
     email = Column(String(80), unique=True)
     password = Column(String(128))
 
@@ -61,7 +61,7 @@ class User(Base):
     def verify_password(self, password):
         return check_password_hash(self.password, password)
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         return f"<User(username={self.username}, email={self.email})>"
 
 
@@ -108,7 +108,7 @@ class Note(Base):
         self.text = text
         self.owner_id = owner_id
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         return f"<Note(name={self.name}, number_of_moderators={self.number_of_moderators})>"
 
 
@@ -126,5 +126,5 @@ class Tag(Base):
     def __init__(self, name):
         self.name = name
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         return f"<Tag(name={self.name})>"

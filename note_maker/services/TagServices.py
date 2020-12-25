@@ -1,13 +1,14 @@
 from flask import request
 from flask_restful import Resource
 
-from note_maker import session
+from note_maker import session, auth
 from note_maker.models import Tag
 from note_maker.schemas import tag_schema, tag_list_schema
 from note_maker.services.Exceptions import Message
 
 
 class TagService(Resource):
+    @auth.login_required
     def post(self):
         request_data = request.get_json()
         try:
@@ -25,6 +26,7 @@ class TagService(Resource):
 
         return Message.successful('created', 201)
 
+    @auth.login_required
     def put(self, tag_id):
         request_data = request.get_json()
         tag = session.query(Tag).get(tag_id)
@@ -48,6 +50,7 @@ class TagService(Resource):
         print('here4')
         return tag_schema.dump(tag), 200
 
+    @auth.login_required
     def delete(self, tag_id):
         tag = session.query(Tag).get(tag_id)
         if tag is None:
