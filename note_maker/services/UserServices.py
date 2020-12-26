@@ -43,11 +43,11 @@ class UserService(Resource):
         request_data = request.get_json()
         user = session.query(User).get(user_id)
 
-        if user.email != auth.current_user().email:
-            return Message.auth_failed()
-
         if user is None:
             return Message.instance_not_exist()
+
+        if user.email != auth.current_user().email:
+            return Message.auth_failed()
 
         if 'username' in request_data:
             user.username = request_data['username']
@@ -69,11 +69,12 @@ class UserService(Resource):
     def delete(self, user_id):
         user = session.query(User).get(user_id)
 
+        if user is None:
+            return Message.instance_not_exist()
+
         if user.email != auth.current_user().email:
             return Message.auth_failed()
 
-        if user is None:
-            return Message.instance_not_exist()
         session.delete(user)
         session.commit()
         return Message.successful('deleted')
@@ -102,6 +103,8 @@ class UserNotesService(Resource):
 @auth.verify_password
 def verify_password(login, password):
     user = session.query(User).filter(User.email == login).first()
+    if user is None:
+        return Message.instance_not_exist()
     if user and check_password_hash(user.password, password):
         return user
 

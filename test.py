@@ -2,13 +2,11 @@ from os import name
 from note_maker.schemas import NoteSchema, UserSchema, TagSchema
 from note_maker.services.Exceptions import Message
 import unittest
-from flask.globals import session
-from flask_testing import TestCase, LiveServerTestCase
-from note_maker import app, api, Session, engine
+from note_maker import app, Session, engine
 from note_maker.models import Base
 import json
-import unittest
 import base64
+import unittest
 from note_maker.models import *
 
 
@@ -109,13 +107,6 @@ class TestNoteMaker(unittest.TestCase):
 
         user = create_user(self)
 
-        # credentials = base64.b64encode(
-        #     b"user1@test.com: user1test").decode('utf-8')
-
-        # response = self.client.get(f"/api/user/{user.id}", headers=json.dumps({
-        #                            "Authorization": "Basic user1@test.com:user1test"}),
-        #                            content_type='application/json')
-
         response = self.client.get(f"/api/user/{user.id}/")
 
         self.assertEqual(response.get_json(), UserSchema().dump(user))
@@ -135,7 +126,9 @@ class TestNoteMaker(unittest.TestCase):
 
         response = self.client.put(
             f"/api/user/{user.id}/", data=json.dumps(dict(username="user1_edited")),
-            content_type='application/json')
+            content_type='application/json', headers={
+                'Authorization': 'Basic ' +
+                base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 200),
                          Message.successful('updated'))
@@ -146,7 +139,9 @@ class TestNoteMaker(unittest.TestCase):
 
         response = self.client.put(
             f"/api/user/{user.id + 2}/", data=json.dumps(dict(username="user1_edited")),
-            content_type='application/json')
+            content_type='application/json', headers={
+                'Authorization': 'Basic ' +
+                base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 404),
                          Message.instance_not_exist())
@@ -155,7 +150,9 @@ class TestNoteMaker(unittest.TestCase):
 
         user = create_user(self)
 
-        response = self.client.delete(f"/api/user/{user.id}/")
+        response = self.client.delete(f"/api/user/{user.id}/", headers={
+            'Authorization': 'Basic ' +
+            base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 200),
                          Message.successful('deleted'))
@@ -164,7 +161,9 @@ class TestNoteMaker(unittest.TestCase):
 
         user = create_user(self)
 
-        response = self.client.delete(f"/api/user/{user.id + 2}/")
+        response = self.client.delete(f"/api/user/{user.id + 2}/", headers={
+            'Authorization': 'Basic ' +
+            base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 404),
                          Message.instance_not_exist())
@@ -229,30 +228,38 @@ class TestNoteMaker(unittest.TestCase):
             text="note1 blablablablabla",
             owner_id=user.id
         )),
-            content_type='application/json')
+            content_type='application/json', headers={
+            'Authorization': 'Basic ' +
+            base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 201),
                          Message.successful('created', 201))
 
     def test_create_note_value_error(self):
 
+        user = create_user(self)
+
         response = self.client.post("/api/note/", data=json.dumps(dict(
             name="note1",
-            text="note1 blablablablabla",
         )),
-            content_type='application/json')
+            content_type='application/json', headers={
+            'Authorization': 'Basic ' +
+            base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 400),
                          Message.value_error())
 
     def test_create_note_creation_error(self):
 
+        # user = create_user(self)
+
         response = self.client.post("/api/note/", data=json.dumps(dict(
-            name="note1",
+            name=None,
             text="note1 blablablablabla",
-            owner_id="str"
         )),
-            content_type='application/json')
+            content_type='application/json', headers={
+            'Authorization': 'Basic ' +
+            base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 400),
                          Message.creation_error())
@@ -280,7 +287,9 @@ class TestNoteMaker(unittest.TestCase):
 
         response = self.client.put(
             f"/api/note/{note.id}/", data=json.dumps(dict(name="note1_edited")),
-            content_type='application/json')
+            content_type='application/json', headers={
+                'Authorization': 'Basic ' +
+                base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 200),
                          Message.successful('updated'))
@@ -291,7 +300,9 @@ class TestNoteMaker(unittest.TestCase):
 
         response = self.client.put(
             f"/api/note/{note.id + 2}/", data=json.dumps(dict(name="note1_edited")),
-            content_type='application/json')
+            content_type='application/json', headers={
+                'Authorization': 'Basic ' +
+                base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 404),
                          Message.instance_not_exist())
@@ -300,7 +311,9 @@ class TestNoteMaker(unittest.TestCase):
 
         note = create_note(self)
 
-        response = self.client.delete(f"/api/note/{note.id}/")
+        response = self.client.delete(f"/api/note/{note.id}/", headers={
+            'Authorization': 'Basic ' +
+            base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 200),
                          Message.successful('deleted'))
@@ -309,7 +322,9 @@ class TestNoteMaker(unittest.TestCase):
 
         note = create_note(self)
 
-        response = self.client.delete(f"/api/note/{note.id + 2}/")
+        response = self.client.delete(f"/api/note/{note.id + 2}/", headers={
+            'Authorization': 'Basic ' +
+            base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 404),
                          Message.instance_not_exist())
@@ -347,7 +362,9 @@ class TestNoteMaker(unittest.TestCase):
         response = self.client.post("/api/tag/", data=json.dumps(dict(
             name="tag1",
         )),
-            content_type='application/json')
+            content_type='application/json', headers={
+            'Authorization': 'Basic ' +
+            base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 201),
                          Message.successful('created', 201))
@@ -357,7 +374,9 @@ class TestNoteMaker(unittest.TestCase):
         response = self.client.post("/api/tag/", data=json.dumps(dict(
             name=None,
         )),
-            content_type='application/json')
+            content_type='application/json', headers={
+            'Authorization': 'Basic ' +
+            base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 400),
                          Message.value_error())
@@ -369,7 +388,9 @@ class TestNoteMaker(unittest.TestCase):
         response = self.client.post("/api/tag/", data=json.dumps(dict(
             name="tag1",
         )),
-            content_type='application/json')
+            content_type='application/json', headers={
+            'Authorization': 'Basic ' +
+            base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 400),
                          Message.creation_error())
@@ -397,7 +418,9 @@ class TestNoteMaker(unittest.TestCase):
 
         response = self.client.put(
             f"/api/tag/{tag.id}/", data=json.dumps(dict(name="tag1_edited")),
-            content_type='application/json')
+            content_type='application/json', headers={
+                'Authorization': 'Basic ' +
+                base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 200),
                          Message.successful('updated'))
@@ -408,7 +431,9 @@ class TestNoteMaker(unittest.TestCase):
 
         response = self.client.put(
             f"/api/tag/{tag.id + 2}/", data=json.dumps(dict(name="tag1_edited")),
-            content_type='application/json')
+            content_type='application/json', headers={
+                'Authorization': 'Basic ' +
+                base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 404),
                          Message.instance_not_exist())
@@ -426,7 +451,9 @@ class TestNoteMaker(unittest.TestCase):
 
         tag = create_tag(self)
 
-        response = self.client.delete(f"/api/tag/{tag.id + 2}/")
+        response = self.client.delete(f"/api/tag/{tag.id + 2}/", headers={
+            'Authorization': 'Basic ' +
+            base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 404),
                          Message.instance_not_exist())
@@ -462,7 +489,9 @@ class TestNoteMaker(unittest.TestCase):
 
         response = self.client.put(
             f"/api/add/note/{note.id}/tag/{tag.id}/",
-            content_type='application/json')
+            content_type='application/json', headers={
+                'Authorization': 'Basic ' +
+                base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 200),
                          Message.successful('add tag to note'))
@@ -475,7 +504,9 @@ class TestNoteMaker(unittest.TestCase):
 
         response = self.client.put(
             f"/api/add/note/{note.id}/tag/{tag.id+2}/",
-            content_type='application/json')
+            content_type='application/json', headers={
+                'Authorization': 'Basic ' +
+                base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 404),
                          Message.instance_not_exist())
@@ -488,7 +519,9 @@ class TestNoteMaker(unittest.TestCase):
 
         response = self.client.put(
             f"/api/add/note/{note.id+2}/tag/{tag.id}/",
-            content_type='application/json')
+            content_type='application/json', headers={
+                'Authorization': 'Basic ' +
+                base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 404),
                          Message.instance_not_exist())
@@ -506,7 +539,9 @@ class TestNoteMaker(unittest.TestCase):
 
         response = self.client.put(
             f"/api/add/note/{note.id}/user/{user.id}/",
-            content_type='application/json')
+            content_type='application/json', headers={
+                'Authorization': 'Basic ' +
+                base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 200),
                          Message.successful('add moderator to note'))
@@ -524,7 +559,9 @@ class TestNoteMaker(unittest.TestCase):
 
         response = self.client.put(
             f"/api/add/note/{note.id}/user/{user.id+2}/",
-            content_type='application/json')
+            content_type='application/json', headers={
+                'Authorization': 'Basic ' +
+                base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 404),
                          Message.instance_not_exist())
@@ -542,7 +579,9 @@ class TestNoteMaker(unittest.TestCase):
 
         response = self.client.put(
             f"/api/add/note/{note.id+2}/user/{user.id}/",
-            content_type='application/json')
+            content_type='application/json', headers={
+                'Authorization': 'Basic ' +
+                base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 404),
                          Message.instance_not_exist())
@@ -570,7 +609,9 @@ class TestNoteMaker(unittest.TestCase):
 
         response = self.client.put(
             f"/api/add/note/{note.id}/user/{user6.id}/",
-            content_type='application/json')
+            content_type='application/json', headers={
+                'Authorization': 'Basic ' +
+                base64.b64encode(b'user1@test.com:user1test').decode('utf-8')})
 
         self.assertEqual((response.get_json(), 400),
                          Message.message('Can not add a moderator', 400))

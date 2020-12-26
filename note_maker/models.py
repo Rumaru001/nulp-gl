@@ -75,8 +75,8 @@ class Note(Base):
     __tablename__ = 'note'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(50))
-    text = Column(String(404))
+    name = Column(String(50), nullable=False)
+    text = Column(String(404), nullable=False)
 
     # must be handled during adding permision for user to modify note or removing this permition
     # max value = 5
