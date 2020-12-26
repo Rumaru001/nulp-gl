@@ -1,5 +1,7 @@
+from marshmallow.decorators import validates
+from marshmallow.utils import RAISE
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, auto_field
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, validate
 from .models import (
     User, Note, Tag
 )
@@ -18,6 +20,10 @@ class TagSchema(SQLAlchemyAutoSchema):
 
 
 class NoteSchema(SQLAlchemyAutoSchema):
+    name = fields.Str(validate=validate.Length(max=50))
+    text = fields.Str(validate=validate.Length(max=404))
+    owner_id = fields.Int()
+
     class Meta:
         fields = ['id', 'name', 'text',
                   'owner_id', 'owner', 'users',

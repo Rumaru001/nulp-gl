@@ -19,7 +19,7 @@ note_to_user = Table('note_to_user', Base.metadata,
                          'note.id'), primary_key=True),
                      Column('user_id', ForeignKey('user.id'), primary_key=True))
 
-# many to many table User - Note 
+# many to many table User - Note
 # main purpose - store date&time of note modification and user who did it
 modifications = Table('modifications', Base.metadata,
                       Column('note_id', ForeignKey(
@@ -115,7 +115,7 @@ class Note(Base):
 class Tag(Base):
     __tablename__ = 'tag'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, nullable=False)
     name = Column(String(20), unique=True)
 
     # notes with with tag

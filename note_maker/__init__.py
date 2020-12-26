@@ -10,7 +10,7 @@ import pathlib
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 
 # creation of sqlalchemy session and db engine
-engine = create_engine(f'sqlite:///{BASE_DIR}/db.sqlite?check_same_thread=False', echo=True)
+engine = create_engine(f'sqlite:///{BASE_DIR}/db.sqlite?check_same_thread=False')
 Session = sessionmaker(bind=engine)
 session = Session()
 

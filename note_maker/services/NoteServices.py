@@ -18,6 +18,9 @@ class NoteService(Resource):
         except KeyError:
             return Message.value_error()
 
+        if note_schema.validate(data=request_data, session=session):
+            return Message.creation_error()
+
         note = Note(
             name=name,
             text=text,
@@ -45,6 +48,9 @@ class NoteService(Resource):
 
         if note is None:
             return Message.instance_not_exist()
+
+        # if not user in note.users:
+        #     return Message.message('Forbiden', 403)
 
         if 'name' in request_data:
             note.name = request_data['name']

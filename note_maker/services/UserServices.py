@@ -2,6 +2,7 @@ from flask import request
 from flask_restful import Resource
 
 from note_maker import session, auth, app
+from sqlalchemy.exc import IntegrityError
 from note_maker.models import User, Note
 from note_maker.schemas import (
     user_schema, user_list_schema, note_list_schema)
@@ -24,11 +25,16 @@ class UserService(Resource):
             email=email,
             password=password
         )
+
         if user is None:
             return Message.creation_error()
 
         session.add(user)
-        session.commit()
+        try:
+            session.commit()
+        except IntegrityError:
+            session.rollback()
+            return Message.creation_error()
 
         return Message.successful('created', 201)
 
