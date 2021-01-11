@@ -2,7 +2,7 @@ from flask import request
 from flask_restful import Resource
 
 from note_maker import session, auth
-from note_maker.models import Note, Tag
+from note_maker.models import Note, Tag, User
 from note_maker.schemas import user_schema, note_schema, note_list_schema
 from note_maker.services.Exceptions import Message
 
@@ -14,9 +14,16 @@ class NoteService(Resource):
         try:
             name = request_data['name']
             text = request_data['text']
+            if not isinstance(auth.current_user(), User):
+                raise Exception
             owner_id = auth.current_user().id
         except KeyError:
             return Message.value_error()
+        except Exception:
+            return Message.creation_error()
+
+        if note_schema.validate(data=request_data, session=session):
+            return Message.creation_error()
 
         note = Note(
             name=name,
@@ -36,15 +43,15 @@ class NoteService(Resource):
         request_data = request.get_json()
         note = session.query(Note).get(note_id)
 
+        if note is None:
+            return Message.instance_not_exist()
+
         is_moderator = False
         for moderator in note.users:
             if moderator.id == auth.current_user().id:
                 is_moderator = True
         if note.owner_id != auth.current_user().id and not is_moderator:
             return Message.auth_failed()
-
-        if note is None:
-            return Message.instance_not_exist()
 
         if 'name' in request_data:
             note.name = request_data['name']
@@ -68,11 +75,12 @@ class NoteService(Resource):
     def delete(self, note_id):
         note = session.query(Note).get(note_id)
 
+        if note is None:
+            return Message.instance_not_exist()
+
         if note.owner_id != auth.current_user().id:
             return Message.auth_failed()
 
-        if note is None:
-            return Message.instance_not_exist()
         session.delete(note)
         session.commit()
         return Message.successful('deleted')

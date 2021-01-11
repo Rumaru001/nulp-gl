@@ -3,3 +3,5 @@
 .envrc
 __pycache__
 alembic.versions
+.DS_Store
+.coverage

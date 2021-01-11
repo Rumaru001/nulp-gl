@@ -1,6 +1,6 @@
 from flask import request
 from flask_restful import Resource
-
+from sqlalchemy.exc import IntegrityError
 from note_maker import session, auth
 from note_maker.models import Tag
 from note_maker.schemas import tag_schema, tag_list_schema
@@ -16,13 +16,20 @@ class TagService(Resource):
         except KeyError:
             return Message.value_error()
 
+        if tag_schema.validate(data=request_data, session=session):
+            return Message.value_error()
         tag = Tag(name=name)
 
         if tag is None:
             return Message.creation_error()
 
         session.add(tag)
-        session.commit()
+
+        try:
+            session.commit()
+        except IntegrityError:
+            session.rollback()
+            return Message.creation_error()
 
         return Message.successful('created', 201)
 
@@ -41,13 +48,11 @@ class TagService(Resource):
         return Message.successful('updated')
 
     def get(self, tag_id):
-        print('here')
+
         tag = session.query(Tag).get(tag_id)
-        print('here2')
+
         if tag is None:
-            print('here3')
             return Message.instance_not_exist()
-        print('here4')
         return tag_schema.dump(tag), 200
 
     @auth.login_required

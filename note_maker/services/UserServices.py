@@ -2,6 +2,7 @@ from flask import request
 from flask_restful import Resource
 
 from note_maker import session, auth, app
+from sqlalchemy.exc import IntegrityError
 from note_maker.models import User, Note
 from note_maker.schemas import (
     user_schema, user_list_schema, note_list_schema)
@@ -24,11 +25,16 @@ class UserService(Resource):
             email=email,
             password=password
         )
+
         if user is None:
             return Message.creation_error()
 
         session.add(user)
-        session.commit()
+        try:
+            session.commit()
+        except IntegrityError:
+            session.rollback()
+            return Message.creation_error()
 
         return Message.successful('created', 201)
 
@@ -37,11 +43,11 @@ class UserService(Resource):
         request_data = request.get_json()
         user = session.query(User).get(user_id)
 
-        if user.email != auth.current_user().email:
-            return Message.auth_failed()
-
         if user is None:
             return Message.instance_not_exist()
+
+        if user.email != auth.current_user().email:
+            return Message.auth_failed()
 
         if 'username' in request_data:
             user.username = request_data['username']
@@ -63,11 +69,12 @@ class UserService(Resource):
     def delete(self, user_id):
         user = session.query(User).get(user_id)
 
+        if user is None:
+            return Message.instance_not_exist()
+
         if user.email != auth.current_user().email:
             return Message.auth_failed()
 
-        if user is None:
-            return Message.instance_not_exist()
         session.delete(user)
         session.commit()
         return Message.successful('deleted')
@@ -96,6 +103,8 @@ class UserNotesService(Resource):
 @auth.verify_password
 def verify_password(login, password):
     user = session.query(User).filter(User.email == login).first()
+    if user is None:
+        return Message.instance_not_exist()
     if user and check_password_hash(user.password, password):
         return user
 
