@@ -1,0 +1,118 @@
+$base-font-weight: 300;
+$base-font-size: 1rem;
+$base-line-height: 1.5;
+
+
+.align {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+
+  &__item {
+
+    &--start {
+      align-self: flex-start;
+    }
+
+    &--end {
+      align-self: flex-end;
+    }
+
+  }
+
+}
+
+.site {
+  &__logo {
+    margin-bottom: 2rem;
+  }
+
+}
+
+input {
+  border: 0;
+  font: inherit;
+
+  &::placeholder {
+    color: #7e8ba3;
+  }
+
+}
+
+.form {
+  &__field {
+    margin-bottom: 1rem;
+  }
+
+  input {
+    outline: 0;
+    padding: .5rem 1rem;
+
+    &[type="email"],
+    &[type="password"] {
+      width: 90%;
+    }
+
+  }
+
+}
+
+.grid {
+  margin: 0 auto;
+  max-width: 25rem;
+  width: 100%;
+}
+
+h2 {
+  font-size: 2.75rem;
+  font-weight: 100;
+  color: #fff;
+  margin: 0 0 1rem;
+  text-transform: uppercase;
+}
+
+.logo {
+  width: 100px;
+  height: auto;
+  padding-bottom: 40px;
+}
+
+a {
+  color: #7e8ba3;
+}
+
+.login,
+.register {
+  border-radius: 6px;
+  box-shadow: 0 0 250px #000;
+  text-align: center;
+  padding: 4rem 2rem;
+
+  input {
+    border: 1px solid #98989a;
+    border-radius: 999px;
+    background-color: transparent;
+    text-align: center;
+
+    &[type="email"],
+    &[type="password"] {
+      color: #fff;
+
+    }
+
+    &[type="submit"] {
+      background-image: linear-gradient(160deg, #e81400 0%, #F44336 100%);
+      color: #fff;
+      margin-bottom: 4rem;
+      width: 100%;
+      cursor: pointer;
+      border: none;
+    }
+
+    &[type="submit"]:hover {
+      background-image: linear-gradient(160deg, #F44336 0%, #e81400 100%);
+    }
+
+  }
+
+}

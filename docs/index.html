@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Notes Keeper</title>
+    <link rel="stylesheet" href="assets/css/main.css"/>
+    <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+</head>
+<body>
+<nav class="nav__cont">
+    <ul class="nav">
+        <li class="nav__items ">
+            <img src="images/profile.svg">
+            <a href="#popup-profile">Profile</a>
+        </li>
+        <li class="nav__items ">
+            <img src="images/notes.svg">
+            <a href="">Notes</a>
+        </li>
+        <li class="nav__items ">
+            <img src="images/add-tag.svg">
+            <a href="#popup-tags">Tags</a>
+        </li>
+        <li class="nav__items ">
+            <img src="images/logout.svg">
+            <a href="login.html">Log out</a>
+        </li>
+    </ul>
+</nav>
+<div class="notes">
+    <div class="note">
+        <div class="inner">
+            <div class="title">Title</div>
+            <div class="text">'+ text +'</div>
+            <div class="footer">
+                <button><a href="#popup-share"><img src="images/share.svg"></a></button>
+                <button><a href="#popup-edit"><img src="images/edit.svg"></a></button>
+                <button><a href="#popup-add-tag"><img src="images/tag.svg"></a></button>
+                <button><a href="#popup-delete"><img src="images/delete.svg"></a></button>
+            </div>
+        </div>
+    </div>
+</div>
+<a href="#popup-edit">
+    <button class="big-add hide-click-border">
+        <i class="material-icons">+</i>
+    </button>
+</a>
+<div id="popup-edit" class="overlay">
+    <div class="popup edit">
+        <textarea class="edit-title content">Here i am</textarea>
+        <a class="close" href="">&times;</a>
+        <textarea class="edit-area content">Hello everyone! This is my note!</textarea>
+        <div class="footer">
+            <button class="save-btn hide-click-border">SAVE</button>
+        </div>
+    </div>
+</div>
+<div id="popup-delete" class="overlay">
+    <div class="popup delete">
+        <a class="close" href="">&times;</a>
+        <h2>Are you sure?</h2>
+        <button class="save-btn hide-click-border">DELETE</button>
+    </div>
+</div>
+<div id="popup-profile" class="overlay">
+    <div class="popup profile">
+        <a class="close" href="">&times;</a>
+        <div>
+            <div class="header">
+                <h2>Profile</h2>
+            </div>
+            <form action="" method="post">
+                <div class="username">
+                    <p>Username</p>
+                    <input type="username" value="your99nickname">
+                </div>
+                <div class="email">
+                    <p>Email</p>
+                    <input type="email" value="your-email@mail.com">
+                </div>
+                <div class="password">
+                    <p>Password</p>
+                    <input type="password" placeholder="••••••••">
+                </div>
+                <div class="footer">
+                    <button class="save-btn hide-click-border" type="submit">SAVE</button>
+                </div>
+            </form>
+        </div>
+        <script src="assets/js/main.js"></script>
+</body>
+
+</html>
